@@ -1,2 +1,2 @@
-# mad-k8s
+# tidb-mad-k8s
 k8s manifests
