@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-anomaly-detector
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-anomaly-detector
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus-anomaly-detector
+    spec:
+      containers:
+        - env:
+            - name: FLT_PROM_URL
+              value: "http://basic-prometheus.tidb-cluster.svc.cluster.local:9090/"
+            - name: FLT_METRICS_LIST
+              value: "tikv_grpc_msg_duration_seconds_count:5m;
+                      tidb_server_connections"
+            - name: FLT_RETRAINING_INTERVAL_MINUTES
+              value: "5"
+            - name: FLT_ROLLING_TRAINING_WINDOW_SIZE
+              value: "24h"
+            - name: FLT_DEBUG_MODE
+              value: "True"
+            - name: APP_FILE
+              value: "app.py"
+          name: prometheus-anomaly-detector
+          image: quay.io/aicoe/prometheus-anomaly-detector:latest
+          ports:
+            - containerPort: 8080
